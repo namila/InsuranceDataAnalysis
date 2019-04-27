@@ -9,15 +9,15 @@ my_function = function(dataSet, parameter){
       
       if(no_of_missing_values > 0){
         mean_value = mean(data_column, na.rm = TRUE)
-        data_column[is.na(data_column)] = mean_value
-        
+        dataSet[[column_name]][is.na(dataSet[[column_name]])] =  mean_value
       }
     } else{
       cat(column_name," is qualititative \n")
       
       if(no_of_missing_values > 0){
         mode_value = mode(data_column)
-        data_column[is.na(data_column)] = mode_value
+        cat("Mode value ", mode_value)
+        dataSet[[column_name]][is.na(dataSet[[column_name]])] =  mode_value
       }
     }
     cat("Number of missing values", no_of_missing_values, "\n")
@@ -26,10 +26,10 @@ my_function = function(dataSet, parameter){
   head(dataSet)
 }
 
-head(SLPopulation)
-my_function(SLPopulation, "")
-is.na(insuranceData$district)
-insuranceData$gender[is.na(insuranceData$gender)]
-sum(is.na(insuranceData[["age"]]))
-cat("asd","ss")
+#head(SLPopulation)
+my_function(insuranceDataDup, "")
+
+getmode(insuranceDataDup)
+
+
 
