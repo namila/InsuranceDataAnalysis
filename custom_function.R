@@ -7,6 +7,10 @@ my_function = function(dataSet, parameter){
   
   # Iterating through each column
   for(column_name in colnames(dataSet)){
+    
+    if(column_name == "X1"){
+      next    
+    }
     data_column = dataSet[[column_name]]
     
     # Calculating number of missing values for the current column
@@ -23,9 +27,12 @@ my_function = function(dataSet, parameter){
         mean_value = mean(data_column, na.rm = TRUE)
         dataSet[[column_name]][is.na(dataSet[[column_name]])] =  mean_value
       }
-     outLiers =  boxplot(dataSet[[column_name]])$out
+    
+     outLiers =  boxplot(dataSet[[column_name]], ylab = column_name, main = paste("BoxPlot for ", column_name))$out
+    
+     hist(dataSet[[column_name]], main=paste("Histogram of ",column_name), xlab = column_name)
      cat("Outliers", outLiers, "\n\n\n")
-
+     
     } 
     
     # Qualititative variables
@@ -40,6 +47,7 @@ my_function = function(dataSet, parameter){
         dataSet[[column_name]][is.na(dataSet[[column_name]])] =  mode_value
       }
     }
+    
   }
   
   head(dataSet)
