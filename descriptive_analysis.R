@@ -39,6 +39,39 @@ gender_percentages = round(100*gender_summery/sum(gender_summery), 1)
 pie(gender_summery, col = rainbow(length(gender_summery)), labels = gender_percentages)
 legend("topright", c("female","male"), cex = 0.8, fill = rainbow(length(gender_summery)))
 
+# Analyzing BMI
+
+# Summery of the BMI
+summary(insuranceData$bmi)
+
+# Histogram for BMI
+hist(insuranceData$bmi, main = "Histogram of BMI", xlab = "BMI", ylab = "Number of People", col = "blue")
+
+# Standard Deiviation 
+bmi_sd=sd(insuranceData$bmi)
+bmi_sd
+
+# box plot and outliers
+outliers = boxplot(insuranceData$bmi, main = "Box plot for BMI", col = "blue", ylab = "BMI")$out
+cat ("Outliers", "\n", outliers)
+
+
+# Analyzing number of kids
+
+# Summery of the num_kids
+summary(insuranceData$num_kids)
+
+# Histogram for num_kids
+hist(insuranceData$num_kids, main = "Histogram of number of kids", xlab = "num_kids", ylab = "Number of People", col = "blue")
+
+# Standard Deiviation 
+num_kids_sd=sd(insuranceData$num_kids)
+num_kids_sd
+
+# box plot and outliers
+outliers = boxplot(insuranceData$num_kids, main = "Box plot for number of kids", col = "blue", ylab = "num_kids")$out
+cat ("Outliers", "\n", outliers)
+
 
 
 
