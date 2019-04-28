@@ -36,7 +36,7 @@ gender_summery
 
 # Pie chat of the gender distribution
 gender_percentages = round(100*gender_summery/sum(gender_summery), 1)
-pie(gender_summery, col = rainbow(length(gender_summery)), labels = gender_percentages)
+pie(gender_summery, main= "Gender distribution", col = rainbow(length(gender_summery)), labels = gender_percentages)
 legend("topright", c("female","male"), cex = 0.8, fill = rainbow(length(gender_summery)))
 
 # Analyzing BMI
@@ -71,6 +71,25 @@ num_kids_sd
 # box plot and outliers
 outliers = boxplot(insuranceData$num_kids, main = "Box plot for number of kids", col = "blue", ylab = "num_kids")$out
 cat ("Outliers", "\n", outliers)
+
+
+
+# Analyzing Smoking Status
+
+# summery of the variable
+smoking_status_summery = summary(insuranceData$smoking_status)
+smoking_status_summery
+
+# Pie chat of the smoking status distribution
+smoking_status_percentages = round(100*smoking_status_summery/sum(smoking_status_summery), 1)
+pie(smoking_status_summery, main = "Smoking status distribution", col = rainbow(length(smoking_status_summery)), labels = smoking_status_percentages)
+legend("topright", c("No","Yes"), cex = 0.8, fill = rainbow(length(smoking_status_summery)))
+
+
+
+
+
+
 
 
 
