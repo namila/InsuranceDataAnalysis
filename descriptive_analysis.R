@@ -18,6 +18,9 @@ summary(insuranceData$age)
 
 # Histogram for age
 hist(insuranceData$age, main = "Histogram of Age", xlab = "Age", ylab = "Number of People",labels = TRUE, col = "blue")
+# Standard Deiviation 
+age_sd=sd(insuranceData$age)
+age_sd
 #ggplot(insuranceData, aes(x=age)) + 
  # geom_histogram(color= "black", fill= "blue", binwidth = 5)+
   #ggtitle("Histogram of Age") 
@@ -25,17 +28,22 @@ hist(insuranceData$age, main = "Histogram of Age", xlab = "Age", ylab = "Number 
 # Histograms for age according each gender
 
 genders = levels(insuranceData$gender)
-
+par(mfcol=c(1,2))
 for(current_gender in genders){
   hist(insuranceData[insuranceData$gender == current_gender,]$age, main = paste("Histogram of Age - ", current_gender), xlab = "Age", ylab = "Number of People",labels = TRUE, col = sample(colors(),1))
 }
+par(mfcol=c(1,1))
+
+# Standard deviation of age for each gender
+male_sd = sd(insuranceData[insuranceData$gender == "male",]$age)
+male_sd
+
+female_sd = sd(insuranceData[insuranceData$gender == "female",]$age)
+female_sd
 
 
 
 
-# Standard Deiviation 
-age_sd=sd(insuranceData$age)
-age_sd
 
 # box plot and outliers
 outliers = boxplot(insuranceData$age, main = "Box plot for Age", col = "blue", ylab = "Age")$out
@@ -68,6 +76,38 @@ bmi_sd
 # box plot and outliers
 outliers = boxplot(insuranceData$bmi, main = "Box plot for BMI", col = "blue", ylab = "BMI")$out
 cat ("Outliers", "\n", outliers)
+
+# Density curve
+hist(insuranceData$bmi, prob=TRUE,main = "Density Histogram", xlab = "BMI", col="blue")
+lines(density(insuranceData$bmi), col="red", lwd=2)
+
+# Probability of being underweight
+probability_under_weight = pnorm(18.5, 30.92, 6.212359)
+probability_under_weight
+
+# Probability of being healthy weight
+probability_healthy_weight = pnorm(24.9, 30.92, 6.212359) - pnorm(18.5, 30.92, 6.212359)
+probability_healthy_weight
+
+# Probability of being over wight
+probability_over_weight = pnorm(29.9, 30.92, 6.212359) - pnorm(25, 30.92, 6.212359)
+probability_over_weight
+
+# Probability of being obese wight
+probability_obese_weight = 1- pnorm(30, 30.92, 6.212359)
+probability_obese_weight
+
+
+# Pie chat for weight category distribution
+category_vector =  c("under", "healthy", "over", "obese")
+percentage_vector = c(probability_under_weight * 100, probability_healthy_weight * 100, probability_over_weight * 100, probability_obese_weight * 100)
+bmi_percentage_data = data.frame(category = category_vector, percentage=percentage_vector)
+pie(x = bmi_percentage_data$percentage, main= "BMI Category Distribution", labels = round(bmi_percentage_data$percentage,1), col = rainbow(length(bmi_percentage_data$category)))
+legend("topright", category_vector, cex = 0.9, fill = rainbow(length(bmi_percentage_data$category)))
+
+
+
+
 
 
 # Analyzing number of kids
