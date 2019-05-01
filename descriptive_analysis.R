@@ -43,8 +43,6 @@ female_sd
 
 
 
-
-
 # box plot and outliers
 outliers = boxplot(insuranceData$age, main = "Box plot for Age", col = "blue", ylab = "Age")$out
 cat ("Outliers", "\n", outliers)
@@ -144,6 +142,7 @@ for(current_gender in genders){
   
 }
 
+par(mfcol=c(1,1))
 
 
 # Analyzing number of kids
@@ -205,6 +204,30 @@ histogram_sd
 outliers = boxplot(insuranceData$premium, main = "Box plot for Premium", col = "blue", ylab = "Premium")$out
 cat ("Outliers", "\n", outliers)
 
+
+
+
+# Looking at pattern between variables.
+
+
+# looking at the relationship between age and premuim
+ggplot(insuranceData, aes(x = age, y = premium, color = gender)) + geom_point()
+
+# Calculating pearson correlation_coefficient 
+pearson_correlation_coefficient = cor(insuranceData$age, insuranceData$premium, method = c("pearson"))
+pearson_correlation_coefficient
+
+# looking at the relationship between gender and premuim
+
+premium_summary_male=summary(insuranceData[insuranceData$gender == "male",]$premium)
+premium_summary_male
+
+premium_summary_female=summary(insuranceData[insuranceData$gender == "female",]$premium)
+premium_summary_female
+
+
+
+ggplot(insuranceData, aes(x = gender, y = premium, color = district)) + geom_point()
 
 
 
