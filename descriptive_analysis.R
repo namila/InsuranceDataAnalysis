@@ -98,7 +98,7 @@ probability_obese_weight = 1- pnorm(30, 30.92, 6.212359)
 probability_obese_weight
 
 
-# Pie chat for weight category distribution
+# Pie chat for BMI category distribution
 category_vector =  c("under", "healthy", "over", "obese")
 percentage_vector = c(probability_under_weight * 100, probability_healthy_weight * 100, probability_over_weight * 100, probability_obese_weight * 100)
 bmi_percentage_data = data.frame(category = category_vector, percentage=percentage_vector)
@@ -106,7 +106,43 @@ pie(x = bmi_percentage_data$percentage, main= "BMI Category Distribution", label
 legend("topright", category_vector, cex = 0.9, fill = rainbow(length(bmi_percentage_data$category)))
 
 
-
+# Gender wise Density curve and BMI category distribution
+genders = levels(insuranceData$gender)
+par(mfcol=c(1,2))
+for(current_gender in genders){
+  gender_data = insuranceData[insuranceData$gender == current_gender,]
+  
+  hist(gender_data$bmi, prob=TRUE,main = paste("Density Histogram for", current_gender), xlab = "BMI", col="blue")
+  lines(density(gender_data$bmi), col="red", lwd=2)
+  
+  mean_bmi = mean(gender_data$bmi)
+  standard_deviation = sd(gender_data$bmi)
+  
+  # Probability of being underweight
+  probability_under_weight = pnorm(18.5, mean = mean_bmi, sd = standard_deviation)
+  probability_under_weight
+  
+  # Probability of being healthy weight
+  probability_healthy_weight = pnorm(24.9, mean = mean_bmi, sd = standard_deviation) - pnorm(18.5,  mean = mean_bmi, sd = standard_deviation)
+  probability_healthy_weight
+  
+  # Probability of being over wight
+  probability_over_weight = pnorm(29.9, mean = mean_bmi, sd = standard_deviation) - pnorm(25,  mean = mean_bmi, sd = standard_deviation)
+  probability_over_weight
+  
+  # Probability of being obese wight
+  probability_obese_weight = 1- pnorm(30, mean = mean_bmi, sd = standard_deviation)
+  probability_obese_weight
+  
+  
+  # Pie chat for weight category distribution
+  category_vector =  c("under", "healthy", "over", "obese")
+  percentage_vector = c(probability_under_weight * 100, probability_healthy_weight * 100, probability_over_weight * 100, probability_obese_weight * 100)
+  bmi_percentage_data = data.frame(category = category_vector, percentage=percentage_vector)
+  pie(x = bmi_percentage_data$percentage, main = paste("BMI Category Distribution for", current_gender), labels = round(bmi_percentage_data$percentage,1), col = rainbow(length(bmi_percentage_data$category)))
+  legend("bottomright", category_vector, cex = 0.5, fill = rainbow(length(bmi_percentage_data$category)))
+  
+}
 
 
 
