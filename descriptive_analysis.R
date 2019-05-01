@@ -17,7 +17,21 @@ summary(insuranceData)
 summary(insuranceData$age)
 
 # Histogram for age
-hist(insuranceData$age, main = "Histogram of Age", xlab = "Age", ylab = "Number of People", col = "blue")
+hist(insuranceData$age, main = "Histogram of Age", xlab = "Age", ylab = "Number of People",labels = TRUE, col = "blue")
+#ggplot(insuranceData, aes(x=age)) + 
+ # geom_histogram(color= "black", fill= "blue", binwidth = 5)+
+  #ggtitle("Histogram of Age") 
+
+# Histograms for age according each gender
+
+genders = levels(insuranceData$gender)
+
+for(current_gender in genders){
+  hist(insuranceData[insuranceData$gender == current_gender,]$age, main = paste("Histogram of Age - ", current_gender), xlab = "Age", ylab = "Number of People",labels = TRUE, col = sample(colors(),1))
+}
+
+
+
 
 # Standard Deiviation 
 age_sd=sd(insuranceData$age)
@@ -37,7 +51,7 @@ gender_summery
 # Pie chat of the gender distribution
 gender_percentages = round(100*gender_summery/sum(gender_summery), 1)
 pie(gender_summery, main= "Gender distribution", col = rainbow(length(gender_summery)), labels = gender_percentages)
-legend("topright", c("female","male"), cex = 0.8, fill = rainbow(length(gender_summery)))
+legend("topright", names(gender_summery), cex = 0.8, fill = rainbow(length(gender_summery)))
 
 # Analyzing BMI
 
@@ -83,8 +97,37 @@ smoking_status_summery
 # Pie chat of the smoking status distribution
 smoking_status_percentages = round(100*smoking_status_summery/sum(smoking_status_summery), 1)
 pie(smoking_status_summery, main = "Smoking status distribution", col = rainbow(length(smoking_status_summery)), labels = smoking_status_percentages)
-legend("topright", c("No","Yes"), cex = 0.8, fill = rainbow(length(smoking_status_summery)))
+legend("topright", names(smoking_status_summery), cex = 0.8, fill = rainbow(length(smoking_status_summery)))
 
+
+# Analyzing District
+
+# summery of the variable
+district_summery = summary(insuranceData$district)
+district_summery
+
+# Pie chat of the district distribution
+district_percentages = round(100*district_summery/sum(district_summery), 1)
+pie(district_summery, main = "District distribution", col = rainbow(length(district_summery)), labels = district_percentages)
+legend("topright", names(district_summery), cex = 0.8, fill = rainbow(length(district_summery)))
+
+
+# Analysing premium
+
+# Summery of the Premium
+premium_summary = summary(insuranceData$premium)
+premium_summary
+
+# Histogram for premium
+hist(insuranceData$premium, main = "Histogram of Premium", xlab = "Premium", ylab = "Number of People", col = "blue")
+
+# Standard Deiviation 
+histogram_sd=sd(insuranceData$premium)
+histogram_sd
+
+# box plot and outliers
+outliers = boxplot(insuranceData$premium, main = "Box plot for Premium", col = "blue", ylab = "Premium")$out
+cat ("Outliers", "\n", outliers)
 
 
 
