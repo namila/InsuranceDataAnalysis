@@ -219,16 +219,32 @@ pearson_correlation_coefficient
 
 # looking at the relationship between gender and premuim
 
+
+coded_gender = factor(insuranceData$gender, levels = levels(insuranceData$gender), labels = c(0,1))
+head(coded_gender)
+class(coded_gender)
+spearman_correlation_coefficient = cor(coded_gender, insuranceData$premium, method = c("spearman"))
+spearman_correlation_coefficient
+
+
+
 premium_summary_male=summary(insuranceData[insuranceData$gender == "male",]$premium)
 premium_summary_male
 
 premium_summary_female=summary(insuranceData[insuranceData$gender == "female",]$premium)
 premium_summary_female
 
+# Looking at the relationship between BMI and Premium
+ggplot(insuranceData, aes(x = bmi, y = premium, color = gender)) + geom_point()
 
+# Calculating pearson correlation_coefficient betwen bmi and premium
+pearson_correlation_coefficient = cor(insuranceData$bmi, insuranceData$premium, method = c("pearson"))
+pearson_correlation_coefficient
 
-ggplot(insuranceData, aes(x = gender, y = premium, color = district)) + geom_point()
+# Relationship between number of kids and premium
+ggplot(insuranceData, aes(x = num_kids, y = premium, color = gender)) + geom_point()
 
+ 
 
 
 
