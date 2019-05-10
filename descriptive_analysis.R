@@ -223,7 +223,7 @@ pearson_correlation_coefficient
 coded_gender = factor(insuranceData$gender, levels = levels(insuranceData$gender), labels = c(0,1))
 head(coded_gender)
 class(coded_gender)
-spearman_correlation_coefficient = cor(coded_gender, insuranceData$premium, method = c("spearman"))
+spearman_correlation_coefficient = cor(insuranceData$gender, insuranceData$premium, method = c("spearman"))
 spearman_correlation_coefficient
 
 
@@ -242,14 +242,66 @@ pearson_correlation_coefficient = cor(insuranceData$bmi, insuranceData$premium, 
 pearson_correlation_coefficient
 
 # Relationship between number of kids and premium
-ggplot(insuranceData, aes(x = num_kids, y = premium, color = gender)) + geom_point()
+mean_premium_wth_num_kids = aggregate(insuranceData$premium, list(num_kids = insuranceData$num_kids), mean)
+ggplot(mean_premium_wth_num_kids, aes(x = num_kids, y = x)) + 
+  geom_point(col = "blue") +
+  xlab("Number of Kids") +
+  ylab("Average Premium") +
+  ggtitle("Average premium against number of kids")
 
- 
+correlation_num_kids_and_avg_premuim = cor(mean_premium_wth_num_kids$num_kids, mean_premium_wth_num_kids$x, method = c("pearson"))
+correlation_num_kids_and_avg_premuim
+
+# Relationship between smoking status and premuim
+mean_premium_for_smoking_status = aggregate(insuranceData$premium, list(smoking_status = insuranceData$smoking_status), mean)
+
+ggplot(data = mean_premium_for_smoking_status, aes(x = smoking_status, y = x)) +
+geom_bar(stat = "identity", fill = "blue") +
+geom_text(aes(label = round(x,2)), vjust = -0.3, size = 3.5) +
+xlab("Smoking Status") +
+ylab("Average Premium") +
+ggtitle("Average premium against smoking status")
+
+# Relationship between district and premium
+mean_premium_for_each_district = aggregate(insuranceData$premium, list(district = insuranceData$district), mean)
+mean_premium_for_each_district
+
+ggplot(data = mean_premium_for_each_district, aes(x = district, y = x) ) +
+geom_bar(stat = "identity", fill = "blue") +
+geom_text(aes(label = round(x,2)), vjust = -0.3, size = 3.5) +
+xlab("District") +
+ylab("Average Premium") +
+ggtitle("Average premium for each district")
 
 
+# Finding the suitable model
+
+insuranceData$district
+as.factor(insuranceData$district)
+ a= factor(insuranceData$district)
+# Spliting the data to train and test sets
+
+ insuranceData$coded_gender =  factor(insuranceData$gender,levels = levels(insuranceData$gender),labels = 1:length(levels(insuranceData$gender)))
+ row_count = nrow(insuranceData)
+
+train_ids = sample(1:row_count, row_count * 0.7, replace = FALSE)
+test_ids = setdiff(1:row_count, train_ids)
+
+train_data = insuranceData[train_ids,]
+test_data = insuranceData[test_ids,]
+
+  
+min_model = lm(premium ~ 1, data = train_data)
+summary(min_model)
+
+forward_model = step(min_model, direction = "forward", scope = (~age + gender + bmi + num_kids + smoking_status + district))
+summary(forward_model)
 
 
-
+modified_forward_model = lm(premium ~ ., data = train_data)
+summary(modified_forward_model)
+?step()
+contrasts(train_data$district)
 
 
 
