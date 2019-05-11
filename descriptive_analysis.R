@@ -218,15 +218,12 @@ pearson_correlation_coefficient = cor(insuranceData$age, insuranceData$premium, 
 pearson_correlation_coefficient
 
 # looking at the relationship between gender and premuim
+insuranceData$gender_coded = as.numeric(insuranceData$gender)
 
-
-coded_gender = factor(insuranceData$gender, levels = levels(insuranceData$gender), labels = c(0,1))
-head(coded_gender)
-class(coded_gender)
-spearman_correlation_coefficient = cor(insuranceData$gender, insuranceData$premium, method = c("spearman"))
+spearman_correlation_coefficient = cor(insuranceData$gender_coded, insuranceData$premium, method = c("spearman"))
 spearman_correlation_coefficient
 
-
+?spearman2
 
 premium_summary_male=summary(insuranceData[insuranceData$gender == "male",]$premium)
 premium_summary_male
@@ -273,17 +270,14 @@ xlab("District") +
 ylab("Average Premium") +
 ggtitle("Average premium for each district")
 
+# adding log value fields
+insuranceData$premium_log = log(insuranceData$premium)
 
 # Finding the suitable model
+row_count = nrow(insuranceData)
 
-insuranceData$district
-as.factor(insuranceData$district)
- a= factor(insuranceData$district)
 # Spliting the data to train and test sets
-
- insuranceData$coded_gender =  factor(insuranceData$gender,levels = levels(insuranceData$gender),labels = 1:length(levels(insuranceData$gender)))
- row_count = nrow(insuranceData)
-
+set.seed(100)
 train_ids = sample(1:row_count, row_count * 0.7, replace = FALSE)
 test_ids = setdiff(1:row_count, train_ids)
 
@@ -294,14 +288,44 @@ test_data = insuranceData[test_ids,]
 min_model = lm(premium ~ 1, data = train_data)
 summary(min_model)
 
+# using stepwise regression to get the most suitable model
 forward_model = step(min_model, direction = "forward", scope = (~age + gender + bmi + num_kids + smoking_status + district))
 summary(forward_model)
+# R-squared:  0.743
 
-
-modified_forward_model = lm(premium ~ ., data = train_data)
+# Gender is not significant, droping gender field
+modified_forward_model = lm(premium ~ age + bmi + num_kids + smoking_status + district, data = train_data)
 summary(modified_forward_model)
-?step()
-contrasts(train_data$district)
+# R-squared:  0.7436
+
+# cretaing a model with log value of the premium
+min_model_preimum_log = lm(premium_log ~ 1, data = train_data)
+premium_log_model = step(min_model_preimum_log, direction = "forward", scope = (~age + gender + bmi + num_kids + smoking_status + district))
+summary(premium_log_model)
+# R-squared:  0.7435
+
+# Removing outliers
+
+# removing outliers for bmi
+bmi_outliers = boxplot(train_data$bmi)$out
+train_data_without_bmi_outliers = train_data[-which(train_data$bmi %in% bmi_outliers),]
+train_data_without_bmi_outliers
+
+min_model_bmi_outlier_free = lm(premium ~ 1, data = train_data_without_bmi_outliers)
+bmi_outlier_free_model = step(min_model_bmi_outlier_free, direction = "forward", scope = (~age + gender + bmi + num_kids + smoking_status + district))
+summary(bmi_outlier_free_model)
+# R-squared:  0.7437
+
+# removing outliers for premium
+premium_outliers = boxplot(train_data_without_bmi_outliers$premium)$out
+train_data_without_premium_outliers = train_data_without_bmi_outliers[-which(train_data_without_bmi_outliers$premium %in% premium_outliers),]
+train_data_without_premium_outliers
+
+min_model_premium_outlier_free = lm(premium ~ 1, data = train_data_without_premium_outliers)
+premium_outlier_free_model = step(min_model_premium_outlier_free, direction = "forward", scope = (~age + gender + bmi + num_kids + smoking_status + district))
+summary(premium_outlier_free_model)
+# R-squared:  0.5876
+
 
 
 
