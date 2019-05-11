@@ -270,8 +270,26 @@ xlab("District") +
 ylab("Average Premium") +
 ggtitle("Average premium for each district")
 
+# pre processing
+
 # adding log value fields
 insuranceData$premium_log = log(insuranceData$premium)
+
+# coding the bmi variable
+insuranceData$bmi_class = ""
+
+insuranceData[insuranceData$bmi <= 18.5,]$bmi_class = "under_weight"
+insuranceData[insuranceData$bmi > 18.5 & insuranceData$bmi <= 24.9, ]$bmi_class = "healthy_weight"
+insuranceData[insuranceData$bmi > 24.9 & insuranceData$bmi <= 29.9,]$bmi_class = "over_weight"
+insuranceData[insuranceData$bmi > 29.9,]$bmi_class = "obese_weight"
+
+# coding num_kids variable
+insuranceData$has_kids = FALSE
+
+insuranceData[insuranceData$num_kids > 0,]$has_kids = TRUE
+
+head(insuranceData)
+tail(insuranceData)
 
 # Finding the suitable model
 row_count = nrow(insuranceData)
@@ -325,6 +343,24 @@ min_model_premium_outlier_free = lm(premium ~ 1, data = train_data_without_premi
 premium_outlier_free_model = step(min_model_premium_outlier_free, direction = "forward", scope = (~age + gender + bmi + num_kids + smoking_status + district))
 summary(premium_outlier_free_model)
 # R-squared:  0.5876
+
+# Taking the bmi as a categorical field
+min_model_bmi_as_category = lm(premium ~ 1, data = train_data_without_bmi_outliers)
+bmi_as_category_model = step(min_model_bmi_as_category, direction = "forward", scope = (~age + gender + bmi_class + num_kids + smoking_status + district))
+summary(bmi_as_category_model)
+# AIC=17904.41
+# R-squared:  0.7418
+
+
+# Taking number of kids as a categorical variable
+min_model_num_kids_as_category = lm(premium ~ 1, data = train_data_without_bmi_outliers)
+num_kids_as_category_model = step(min_model_num_kids_as_category, direction = "forward", scope = (~age + gender + bmi + has_kids + smoking_status + district))
+summary(num_kids_as_category_model)
+# AIC=17901.55
+# R-squared:  0.742
+
+
+
 
 
 
