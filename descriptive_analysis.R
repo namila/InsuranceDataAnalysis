@@ -1,5 +1,8 @@
 # importing libraries
+install.packages("ggpubr")
+library(Metrics)
 library(ggplot2)
+library(ggpubr)
 
 
 # imporing the cvs file
@@ -360,8 +363,48 @@ summary(num_kids_as_category_model)
 # R-squared:  0.742
 
 
+# Checking model assumptions
+standardized_residules = rstandard(bmi_outlier_free_model)
+
+# Comparing the distribution of the residuals with the standard distribution
+qqnorm(standardized_residules, ylab = "Quantiles of Standardized Residuals", xlab = "Quantiles of Standard Distribution", main = "Q - Q plot for Residuals and Normal Distribution")
+qqline(standardized_residules)
+
+# Testing normality using shapiro test
+shapiro.test(bmi_outlier_free_model$residuals)
+#p-value < 2.2e-16
 
 
+# Checking relationship, varianc and pattern of residuals
+bmi_outlier_free_model_results =  data.frame(train_data_without_bmi_outliers, 
+                         fitted.value = fitted.values(bmi_outlier_free_model),
+                         residuls = bmi_outlier_free_model$residuals)
 
 
+# Residuals and age
+residuals_and_age = ggplot(bmi_outlier_free_model_results, aes(x = age, y = residuls)) +
+geom_point() +
+geom_hline(yintercept = 0, color = "red", size = 1) +
+ggtitle("Residuals and Age")
 
+# Residuals and bmi
+residuals_and_bmi = ggplot(bmi_outlier_free_model_results, aes(x = bmi, y = residuls)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", size = 1) +
+  ggtitle("Residuals and BMI")
+
+# Residuals and num_kids
+residuals_and_num_kids = ggplot(bmi_outlier_free_model_results, aes(x = num_kids, y = residuls)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", size = 1) +
+  ggtitle("Residuals and Number of Kids")
+
+ggarrange(residuals_and_age, residuals_and_bmi, residuals_and_num_kids, ncol = 2, nrow = 2 )
+
+# validating the model
+bmi_outliers_in_test_data = boxplot(test_data$bmi)$out
+test_data_without_bmi_outliers = test_data[-which(test_data$bmi %in% bmi_outliers_in_test_data),]
+
+predicted_premium = predict(bmi_outlier_free_model, test_data_without_bmi_outliers)
+rmse(test_data_without_bmi_outliers$premium, predicted_premium)
+?rmse
