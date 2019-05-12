@@ -77,7 +77,7 @@ my_function = function(dataSet, parameter){
     
     # Checking for model assumptions
     standardized_residules = rstandard(forward_model)
-    
+    print(head(standardized_residules))
     # Comparing the distribution of the residuals with the standard distribution
     qqnorm(standardized_residules, ylab = "Quantiles of Standardized Residuals", xlab = "Quantiles of Standard Distribution", main = "Q - Q plot for Residuals and Normal Distribution")
     qqline(standardized_residules)
@@ -107,86 +107,46 @@ my_function = function(dataSet, parameter){
       full_model_fomula = as.formula(paste("~", paste(column_names, collapse = "+"),sep = ""))
       
       min_binary_model = glm(formula = min_model_fomula, data = dataSet, family=binomial(link = logit))
-      summary(min_binary_model)
+      print(summary(min_binary_model))
       
       forward_binary_model = step(min_binary_model, direction = "forward", scope = full_model_fomula)
-      summary(forward_binary_model)
+      print(summary(forward_binary_model))
+      
+      
+      standardized_residules = rstandard(forward_binary_model)
+      
+      # Comparing the distribution of the residuals with the standard distribution
+      qqnorm(standardized_residules, ylab = "Quantiles of Standardized Residuals", xlab = "Quantiles of Standard Distribution", main = "Q - Q plot for Residuals and Normal Distribution")
+      qqline(standardized_residules)
+      
+      # Testing normality using shapiro test
+      print(shapiro.test(forward_binary_model$residuals))
+      
+      # looking for variance and linearity
+      for(column in column_names){
+        
+        if(class(dataSet[[column]]) != "factor"){
+          plot( y = forward_binary_model$residuals , x = dataSet[[column]], xlab = column, ylab = "Rediduals", main = paste(column, " and Residuals"))
+          abline(h = 0, col = "red")      
+        }
+        
+      }
+
+      
     }
       
   }
-  
-  
-  
-  
   
   
 }
 
 setwd("/Users/namilap/Documents/Msc/DataAnalysis/CourseWork")
-dataSet = read.csv("insuranceData.csv", header = TRUE)
-  #read.csv("population_by_district_in_census_years.csv", header = TRUE)
-#head(SLPopulation)
-my_function(dataSet, "smoking_status")
+#dataSet = read.csv("insuranceData.csv", header = TRUE)
+dataSet1 =read.csv("kamyr-digester.csv", header = TRUE)
+dataSet1 = dataSet1[, !names(dataSet1) %in% c("Observation")]
+head(dataSet1)
+my_function(dataSet1, "AAWhiteSt.4")
 
-parameter = "smoking_status"
-
-
-
-
-if(is.numeric(dataSet[[parameter]])){
-  min_model_fomula = as.formula(paste(parameter, paste(c(1)), sep = "~"))
-  column_names = names(dataSet)
-  column_names = column_names[column_names != "X" & column_names != paste(parameter)]
-  full_model_fomula = as.formula(paste("~", paste(column_names, collapse = "+"),sep = ""))
-  
-  min_model = lm(min_model_fomula, data = dataSet)
-  forward_model = step(min_model, direction = "forward", scope = full_model_fomula)
-  summary(forward_model)
-  
-  
-  standardized_residules = rstandard(forward_model)
-  
-  # Comparing the distribution of the residuals with the standard distribution
-  qqnorm(standardized_residules, ylab = "Quantiles of Standardized Residuals", xlab = "Quantiles of Standard Distribution", main = "Q - Q plot for Residuals and Normal Distribution")
-  qqline(standardized_residules)
-  
-  # Testing normality using shapiro test
-  shapiro.test(forward_model$residuals)
-  #p-value < 2.2e-16
-  
-  # looking for variance and linearity
-  for(column in column_names){
-    
-    if(class(dataSet[[column]]) != "factor"){
-      plot( y = forward_model$residuals , x = dataSet[[column]], xlab = column, ylab = "Rediduals")
-      abline(h = 0, col = "red")      
-    }
-
-  }
-  
-  
-} 
-
-if(is.factor(dataSet[[parameter]])){
-
-  if(length(levels(dataSet[[parameter]])) == 2){
-    
-    min_model_fomula = as.formula(paste(parameter, paste(c(1)), sep = "~"))
-    column_names = names(dataSet)
-    column_names = column_names[column_names != "X" & column_names != paste(parameter)]
-    full_model_fomula = as.formula(paste("~", paste(column_names, collapse = "+"),sep = ""))
-    
-    min_binary_model = glm(formula = min_model_fomula, data = dataSet, family=binomial(link = logit))
-    summary(min_binary_model)
-    
-    forward_binary_model = step(min_binary_model, direction = "forward", scope = full_model_fomula)
-    summary(forward_binary_model)
-  }
-  
-  
-}
-
-  #"District"
 
 
 
