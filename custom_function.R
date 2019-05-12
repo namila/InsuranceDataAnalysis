@@ -33,6 +33,8 @@ my_function = function(dataSet, parameter){
      hist(dataSet[[column_name]], main=paste("Histogram of ",column_name), xlab = column_name)
      cat("Outliers", outLiers, "\n\n\n")
      
+     
+     
     } 
     
     # Qualititative variables
@@ -63,25 +65,72 @@ my_function = function(dataSet, parameter){
     
   }
   
+  if(class(dataSet[[parameter]]) == "numeric"){
+    min_model_fomula = as.formula(paste(parameter, paste(c(1)), sep = "~"))
+    column_names = names(dataSet)
+    column_names = column_names[column_names != "X" & column_names != paste(parameter)]
+    full_model_fomula = as.formula(paste("~", paste(column_names, collapse = "+"),sep = ""))
+    
+    min_model = lm(min_model_fomula, data = dataSet)
+    forward_model = step(min_model, direction = "forward", scope = full_model_fomula)
+    summary(forward_model)
+    
+    # Checking for model assumptions
+    standardized_residules = rstandard(forward_model)
+    
+    # Comparing the distribution of the residuals with the standard distribution
+    qqnorm(standardized_residules, ylab = "Quantiles of Standardized Residuals", xlab = "Quantiles of Standard Distribution", main = "Q - Q plot for Residuals and Normal Distribution")
+    qqline(standardized_residules)
+    
+    
+    
+  }
+  
+  
+  
+  
+  
+  
 }
 
 setwd("/Users/namilap/Documents/Msc/DataAnalysis/CourseWork")
 dataSet = read.csv("insuranceData.csv", header = TRUE)
   #read.csv("population_by_district_in_census_years.csv", header = TRUE)
 #head(SLPopulation)
-my_function(dataSet, "")
+my_function(dataSet, "premium")
 
-column_name = "district"
+parameter = "premium"
+
+
+
+
+if(class(dataSet[[parameter]]) == "numeric"){
+  min_model_fomula = as.formula(paste(parameter, paste(c(1)), sep = "~"))
+  column_names = names(dataSet)
+  column_names = column_names[column_names != "X" & column_names != paste(parameter)]
+  full_model_fomula = as.formula(paste("~", paste(column_names, collapse = "+"),sep = ""))
+  
+  min_model = lm(min_model_fomula, data = dataSet)
+  forward_model = step(min_model, direction = "forward", scope = full_model_fomula)
+  summary(forward_model)
+  
+  
+  standardized_residules = rstandard(forward_model)
+  
+  # Comparing the distribution of the residuals with the standard distribution
+  qqnorm(standardized_residules, ylab = "Quantiles of Standardized Residuals", xlab = "Quantiles of Standard Distribution", main = "Q - Q plot for Residuals and Normal Distribution")
+  qqline(standardized_residules)
+  
+  
+  
+  
+} 
+
+if(class(dataSet[[parameter]]) == "factor"){
+  
+}
+
   #"District"
-variable_summery = summary(dataSet[[column_name]])
-head(variable_summery)
-barplot(variable_summery, main = )
-?barplot
-ggplot(data = mean_premium_for_each_district, aes(x = district, y = x) ) +
-  geom_bar(stat = "identity", fill = "blue") +
-  geom_text(aes(label = round(x,2)), vjust = -0.3, size = 3.5) +
-  xlab("District") +
-  ylab("Average Premium") +
-  ggtitle("Average premium for each district")
+
 
 
