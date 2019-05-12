@@ -97,6 +97,24 @@ my_function = function(dataSet, parameter){
     
   }
   
+  if(is.factor(dataSet[[parameter]])){
+    
+    if(length(levels(dataSet[[parameter]])) == 2){
+      
+      min_model_fomula = as.formula(paste(parameter, paste(c(1)), sep = "~"))
+      column_names = names(dataSet)
+      column_names = column_names[column_names != "X" & column_names != paste(parameter)]
+      full_model_fomula = as.formula(paste("~", paste(column_names, collapse = "+"),sep = ""))
+      
+      min_binary_model = glm(formula = min_model_fomula, data = dataSet, family=binomial(link = logit))
+      summary(min_binary_model)
+      
+      forward_binary_model = step(min_binary_model, direction = "forward", scope = full_model_fomula)
+      summary(forward_binary_model)
+    }
+      
+  }
+  
   
   
   
@@ -108,9 +126,9 @@ setwd("/Users/namilap/Documents/Msc/DataAnalysis/CourseWork")
 dataSet = read.csv("insuranceData.csv", header = TRUE)
   #read.csv("population_by_district_in_census_years.csv", header = TRUE)
 #head(SLPopulation)
-my_function(dataSet, "premium")
+my_function(dataSet, "smoking_status")
 
-parameter = "premium"
+parameter = "smoking_status"
 
 
 
@@ -150,6 +168,21 @@ if(is.numeric(dataSet[[parameter]])){
 } 
 
 if(is.factor(dataSet[[parameter]])){
+
+  if(length(levels(dataSet[[parameter]])) == 2){
+    
+    min_model_fomula = as.formula(paste(parameter, paste(c(1)), sep = "~"))
+    column_names = names(dataSet)
+    column_names = column_names[column_names != "X" & column_names != paste(parameter)]
+    full_model_fomula = as.formula(paste("~", paste(column_names, collapse = "+"),sep = ""))
+    
+    min_binary_model = glm(formula = min_model_fomula, data = dataSet, family=binomial(link = logit))
+    summary(min_binary_model)
+    
+    forward_binary_model = step(min_binary_model, direction = "forward", scope = full_model_fomula)
+    summary(forward_binary_model)
+  }
+  
   
 }
 
