@@ -50,9 +50,13 @@ my_function = function(dataSet, parameter){
     
   }
   
-  head(dataSet)
+   min_model = lm(premium ~ 1, data = dataSet)
+   my_model = step(min_model, direction = "forward", scope = (~age + gender + bmi + num_kids + smoking_status + district))
+   summary(my_model)
 }
 
+setwd("/Users/namilap/Documents/Msc/DataAnalysis/CourseWork")
+insuranceDataDup = read.csv("insuranceDataDup.csv", header = TRUE)
 #head(SLPopulation)
 my_function(insuranceDataDup, "")
 
