@@ -46,19 +46,42 @@ my_function = function(dataSet, parameter){
         mode_value = get_mode(data_column)
         dataSet[[column_name]][is.na(dataSet[[column_name]])] =  mode_value
       }
+      
+    
+      variable_summery = summary(dataSet[[column_name]])
+    
+      # plotting a bar chart  
+      barplot(variable_summery, main= paste(column_name, " distribution") )
+      
+      # plotting a pie chart
+      percentages = round(100*variable_summery/sum(variable_summery), 1)
+      print(head(dataSet))
+      pie(variable_summery, main= paste(column_name, " distribution") , col = rainbow(length(variable_summery)), labels = percentages)
+      legend("topright", names(variable_summery), cex = 0.8, fill = rainbow(length(variable_summery)))
+      
     }
     
   }
   
-   min_model = lm(premium ~ 1, data = dataSet)
-   my_model = step(min_model, direction = "forward", scope = (~age + gender + bmi + num_kids + smoking_status + district))
-   summary(my_model)
 }
 
 setwd("/Users/namilap/Documents/Msc/DataAnalysis/CourseWork")
-insuranceDataDup = read.csv("insuranceDataDup.csv", header = TRUE)
+dataSet = read.csv("insuranceData.csv", header = TRUE)
+  #read.csv("population_by_district_in_census_years.csv", header = TRUE)
 #head(SLPopulation)
-my_function(insuranceDataDup, "")
+my_function(dataSet, "")
 
+column_name = "district"
+  #"District"
+variable_summery = summary(dataSet[[column_name]])
+head(variable_summery)
+barplot(variable_summery, main = )
+?barplot
+ggplot(data = mean_premium_for_each_district, aes(x = district, y = x) ) +
+  geom_bar(stat = "identity", fill = "blue") +
+  geom_text(aes(label = round(x,2)), vjust = -0.3, size = 3.5) +
+  xlab("District") +
+  ylab("Average Premium") +
+  ggtitle("Average premium for each district")
 
 
