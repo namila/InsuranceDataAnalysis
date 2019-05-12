@@ -65,7 +65,7 @@ my_function = function(dataSet, parameter){
     
   }
   
-  if(class(dataSet[[parameter]]) == "numeric"){
+  if(is.numeric(dataSet[[parameter]])){
     min_model_fomula = as.formula(paste(parameter, paste(c(1)), sep = "~"))
     column_names = names(dataSet)
     column_names = column_names[column_names != "X" & column_names != paste(parameter)]
@@ -73,7 +73,7 @@ my_function = function(dataSet, parameter){
     
     min_model = lm(min_model_fomula, data = dataSet)
     forward_model = step(min_model, direction = "forward", scope = full_model_fomula)
-    summary(forward_model)
+    print(summary(forward_model))
     
     # Checking for model assumptions
     standardized_residules = rstandard(forward_model)
@@ -82,7 +82,18 @@ my_function = function(dataSet, parameter){
     qqnorm(standardized_residules, ylab = "Quantiles of Standardized Residuals", xlab = "Quantiles of Standard Distribution", main = "Q - Q plot for Residuals and Normal Distribution")
     qqline(standardized_residules)
     
+    # Testing normality using shapiro test
+    print(shapiro.test(forward_model$residuals))
     
+    # looking for variance and linearity
+    for(column in column_names){
+      
+      if(class(dataSet[[column]]) != "factor"){
+        plot( y = forward_model$residuals , x = dataSet[[column]], xlab = column, ylab = "Rediduals", main = paste(column," and Residuals"))
+        abline(h = 0, col = "red")      
+      }
+      
+    }
     
   }
   
@@ -104,7 +115,7 @@ parameter = "premium"
 
 
 
-if(class(dataSet[[parameter]]) == "numeric"){
+if(is.numeric(dataSet[[parameter]])){
   min_model_fomula = as.formula(paste(parameter, paste(c(1)), sep = "~"))
   column_names = names(dataSet)
   column_names = column_names[column_names != "X" & column_names != paste(parameter)]
@@ -121,12 +132,24 @@ if(class(dataSet[[parameter]]) == "numeric"){
   qqnorm(standardized_residules, ylab = "Quantiles of Standardized Residuals", xlab = "Quantiles of Standard Distribution", main = "Q - Q plot for Residuals and Normal Distribution")
   qqline(standardized_residules)
   
+  # Testing normality using shapiro test
+  shapiro.test(forward_model$residuals)
+  #p-value < 2.2e-16
   
+  # looking for variance and linearity
+  for(column in column_names){
+    
+    if(class(dataSet[[column]]) != "factor"){
+      plot( y = forward_model$residuals , x = dataSet[[column]], xlab = column, ylab = "Rediduals")
+      abline(h = 0, col = "red")      
+    }
+
+  }
   
   
 } 
 
-if(class(dataSet[[parameter]]) == "factor"){
+if(is.factor(dataSet[[parameter]])){
   
 }
 
